@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#10243d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="NOVELTY" />
+  <meta name="description" content="Prototype mobile NOVELTY : horaires, pointage et photographie de l'étiquette de prestation." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>NOVELTY — Pointage mobile</title>
+  <style>
+  :root {color-scheme: light; --ink:#10243d; --sub:#5e7285; --bg:#f1f5f8; --card:#fff; --accent:#0f78ac; --teal:#16a3a8; --border:#dbe5eb; --light:#eaf6fa; --shadow:0 12px 30px rgba(22,52,75,.08)}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0; background:linear-gradient(180deg,#edf5f8 0,#f6f8fa 340px,#f6f8fa 100%); font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; color:var(--ink)}
+  button,input{font:inherit}
+  button{cursor:pointer}
+  button:focus-visible,input:focus-visible{outline:3px solid #75c9e4;outline-offset:2px}
+  .topbar{background:#10243d;color:#fff;padding:13px max(20px,env(safe-area-inset-right)) 13px max(20px,env(safe-area-inset-left));display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .brand{display:flex;gap:11px;align-items:center;font-weight:800;letter-spacing:.08em;font-size:15px}
+  .mark{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,#51cbd2,#147da8);font-size:21px;font-weight:900;line-height:1}
+  .topchip{font-weight:700;font-size:11px;letter-spacing:.04em;border:1px solid #5d8299;color:#cee9f5;border-radius:999px;padding:6px 9px}
+  .wrap{max-width:720px;margin:0 auto;padding:25px 16px 55px}
+  .heading h1{font-size:clamp(27px,6vw,36px);line-height:1.14;letter-spacing:-.04em;margin:7px 0}
+  .heading p{line-height:1.5;color:var(--sub);margin:10px 0 22px;font-size:15px}
+  .eyebrow{font-weight:800;letter-spacing:.12em;color:#137da3;font-size:11px}
+  .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#e2ebf0;padding:5px;border-radius:14px;margin-bottom:20px}
+  .tab{background:transparent;color:#5e7387;border:0;border-radius:10px;padding:12px 7px;font-weight:750;font-size:14px}
+  .tab.active{background:#fff;color:var(--ink);box-shadow:0 3px 11px rgba(10,42,67,.09)}
+  .demo{background:#fff6e8;border:1px solid #efdbb8;padding:12px 14px;border-radius:12px;color:#865517;font-size:13px;line-height:1.45;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid #e5ebef;border-radius:18px;box-shadow:var(--shadow);margin:14px 0;padding:20px}
+  .section-head{display:flex;gap:11px;align-items:center;margin-bottom:19px}
+  .num{border-radius:11px;background:#e5f4fa;color:#096d99;width:35px;height:35px;display:flex;align-items:center;justify-content:center;font-weight:850}
+  .section-head h2{font-size:17px;line-height:1.2;margin:0;letter-spacing:-.02em}
+  .section-head p{color:var(--sub);font-size:12px;margin:4px 0 0}
+  .field{margin:0 0 15px}
+  .field:last-child{margin-bottom:0}
+  label.label{display:block;font-size:13px;font-weight:750;margin:0 0 7px}
+  .required{color:#db6858}
+  input[type=text],input[type=email],input[type=date],input[type=time],input[type=number]{display:block;width:100%;min-width:0;background:#fbfdfe;border:1.5px solid var(--border);border-radius:11px;padding:12px 13px;height:49px;color:var(--ink);font-size:16px}
+  input::placeholder{color:#9aabb9}
+  .hint{font-size:12px;color:var(--sub);margin:7px 0 0;line-height:1.4}
+  .timegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .timeitem{min-width:0}
+  .timeitem label{display:block;font-size:13px;font-weight:750;margin-bottom:7px}
+  .timebox{display:flex;gap:5px;align-items:stretch}
+  .timebox input{flex:1;min-width:0;padding:10px 8px}
+  .nowbtn{border:1px solid #a7d7e5;background:#eafbfd;color:#0b738d;border-radius:10px;padding:0 9px;font-size:12px;font-weight:800;white-space:nowrap}
+  .checkbox-line{display:flex;align-items:flex-start;gap:9px;margin-top:16px;font-size:13px;color:#53697b}
+  .checkbox-line input{width:18px;height:18px;accent-color:#0a91a0;flex-shrink:0;margin:1px 0 0}
+  .mealrows{display:grid;gap:12px}
+  .mealrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .mealrow>span{font-weight:730;font-size:14px}
+  .choices{display:flex;border:1px solid #d6e4eb;border-radius:11px;padding:3px;background:#f4f8fa;gap:3px}
+  .choices button{border:0;border-radius:8px;background:transparent;padding:9px 18px;color:#65798b;font-size:13px;font-weight:750;min-width:61px}
+  .choices button.selected{background:#fff;color:#116d92;box-shadow:0 1px 5px rgba(0,0,0,.09)}
+  .photoarea{position:relative;border:2px dashed #9ccdda;border-radius:15px;background:#f2fbfd;padding:18px;text-align:center;transition:.15s}
+  .photoarea.dragging{background:#e0f7fb;border-color:#168eab}
+  .cameraicon{background:#d7f1f7;border-radius:14px;display:flex;justify-content:center;align-items:center;width:54px;height:54px;margin:0 auto 10px;font-size:26px}
+  .photoarea strong{display:block;font-size:16px}
+  .photoarea p{color:var(--sub);font-size:12px;line-height:1.4;margin:7px 0 16px}
+  .photobutton{background:#147ba5;color:#fff;border:0;border-radius:11px;padding:12px 18px;font-weight:780;font-size:14px;display:inline-block;cursor:pointer}
+  .photoarea input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:18px}
+  .photo-chooser{display:inline-block;position:relative;overflow:hidden;border-radius:11px;margin:4px}
+  .photo-chooser .photobutton{display:block}
+  .photo-chooser:focus-within{outline:3px solid #147ba5;outline-offset:2px}
+  #photoPreview{width:100%;max-height:240px;object-fit:contain;background:#e8f0f3;border-radius:11px;margin-bottom:12px;display:none}
+  .photo-status{font-size:12px;color:#496879;margin-top:10px;word-break:break-word}
+  .small-link{background:transparent;border:0;color:#096f97;font-weight:750;font-size:12px;padding:9px;margin-top:5px}
+  details{margin-top:16px;border-top:1px solid #edf1f3;padding-top:14px}
+  details summary{color:#28778d;font-weight:750;font-size:13px;cursor:pointer}
+  details .field:first-of-type{margin-top:13px}
+  .actions{display:grid;gap:11px;margin-top:21px}
+  .primary{width:100%;min-height:53px;border:0;border-radius:13px;color:#fff;background:linear-gradient(135deg,#0a789f,#11959c);font-weight:850;font-size:16px;box-shadow:0 7px 18px rgba(20,139,156,.2)}
+  .footnote{text-align:center;color:#82909d;font-size:12px;line-height:1.5;margin:13px 8px}
+  .hidden{display:none !important}
+  .error{border-color:#dd6d60 !important;box-shadow:0 0 0 3px #f8e4e1}
+  #flash{display:none;margin:0 0 12px;background:#fff0ed;border:1px solid #f0c6bb;color:#a03d31;border-radius:12px;padding:12px 15px;font-size:13px;line-height:1.4}
+  .modal{position:fixed;inset:0;background:rgba(10,26,42,.58);z-index:4;display:none;align-items:flex-end;justify-content:center;padding:0 0 env(safe-area-inset-bottom)}
+  .modal.open{display:flex}
+  .modal-content{background:#fff;max-width:620px;width:100%;max-height:88dvh;overflow-y:auto;padding:25px 20px 20px;border-radius:23px 23px 0 0;box-shadow:0 -15px 40px rgba(0,0,0,.18)}
+  .modal-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+  .modal h2{margin:0;font-size:21px;letter-spacing:-.03em}
+  .close{background:#edf3f6;border:0;border-radius:30px;width:36px;height:36px;font-size:22px;color:#547081;line-height:1}
+  .summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+  .stat{background:#f2f7fa;padding:12px;border-radius:10px}
+  .stat small{display:block;color:#637e8e;font-size:12px;margin-bottom:5px}
+  .stat b{font-size:15px}
+  .no-send{font-size:13px;line-height:1.5;color:#865517;background:#fff6e8;border:1px solid #efdbb8;border-radius:12px;padding:12px;margin-top:17px}
+  .corr-note{font-size:13px;background:#eff6fb;color:#37647d;padding:11px 12px;border-radius:10px;line-height:1.45;margin-bottom:18px}
+  .modepick{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;background:#e5eff3;border-radius:13px;margin-bottom:10px}
+  .modebtn{padding:12px 5px;border:0;border-radius:10px;background:transparent;color:#597487;font-size:13px;font-weight:800}
+  .modebtn.active{background:#fff;color:#0c6c93;box-shadow:0 3px 12px #173a5217}
+  .savedjob{border:1px solid #9acfd1;background:#eaf9f7;border-radius:13px;padding:13px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+  select{width:100%;min-height:44px;padding:10px;border-radius:10px;border:1px solid #cbd9e1;background:white;color:#253a49;font-size:14px}
+  .meal-warning{margin-top:13px;border:1px solid #e8c979;background:#fff7db;border-radius:11px;padding:12px;font-size:13px;line-height:1.45;color:#715619}
+  .meal-warning p{margin:7px 0 0}
+  .local-item{padding:11px 0;border-bottom:1px solid #e6ebef;line-height:1.7}
+  .local-item strong{display:block;color:#18364a}
+  .savedjob[hidden]{display:none}
+  .savedactions{display:flex;gap:3px;flex-wrap:wrap}
+  .savedactions .small-link{font-size:12px}
+  @media (max-width:390px){.card{padding:16px}.timegrid{gap:12px}.timebox{flex-direction:column}.nowbtn{min-height:33px}.mealrow>span{font-size:13px}.choices button{min-width:50px;padding:8px 12px}}
+  @media (min-width:650px){.wrap{padding-top:36px}.modal{align-items:center;padding:20px}.modal-content{border-radius:20px}}
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="brand"><div class="mark" aria-hidden="true">N</div><span>NOVELTY</span></div><span class="topchip">POINTAGE MOBILE</span></header>
+  <main class="wrap">
+    <div class="heading"><span class="eyebrow">APPLICATION TECHNICIEN</span><h1>Mon pointage,<br>en quelques clics.</h1><p>Vos chantiers mémorisés, plusieurs pointages possibles par jour. En direct ou en saisie manuelle.</p></div>
+    <div class="tabs" role="tablist" aria-label="Type de démarche"><button type="button" role="tab" class="tab active" id="newTab" aria-selected="true">Nouveau pointage</button><button type="button" role="tab" class="tab" id="correctTab" aria-selected="false">Corriger un pointage</button></div>
+    <div class="demo"><strong>Version 4.1 — démonstration locale avec aperçu photo et lecture d’étiquette.</strong> Les pointages et photos ne sont pas envoyés à NOVELTY. Les chantiers et pointages de démonstration peuvent être conservés <strong>sur cet appareil</strong> ; ne l’utilisez pas pour de vrais pointages avant connexion au système Microsoft.</div>
+    <div id="flash" role="alert"></div>
+    <form id="form" novalidate>
+      <section class="card"><div class="section-head"><span class="num">01</span><div><h2>Mes informations</h2><p>Vos coordonnées restent mémorisées sur ce téléphone</p></div></div>
+        <div class="field"><label class="label" for="technicien">Nom et prénom <span class="required">*</span></label><input id="technicien" name="technicien" autocomplete="name" type="text" placeholder="Ex. : Alex Martin" required /></div>
+        <button type="button" class="small-link" id="clearProfile">Modifier / effacer mon profil mémorisé</button><div class="field"><label class="label" for="email">Adresse e-mail <span style="font-weight:400;color:#748898">(facultatif dans la démo)</span></label><input id="email" name="email" autocomplete="email" type="email" placeholder="Pour la confirmation du pointage" /></div>
+      </section>
+      <section class="card"><div class="section-head"><span class="num">02</span><div><h2>Mes horaires</h2><p>Touchez un horaire ou utilisez « Maintenant »</p></div></div>
+        <div class="modepick" role="group" aria-label="Mode de pointage"><button type="button" id="modeLive" class="modebtn active" aria-pressed="true">● En direct</button><button type="button" id="modeManual" class="modebtn" aria-pressed="false">✎ Saisie manuelle</button></div><p class="hint" id="modeHint">Cliquez sur « Maintenant » à chaque événement. Vous pouvez ajuster l'heure avant validation.</p>
+        <div class="field"><label class="label" for="date">Date du chantier <span class="required">*</span></label><input id="date" name="date" type="date" required /></div>
+        <div class="timegrid">
+          <div class="timeitem"><label for="arrivee">Arrivée <span class="required">*</span></label><div class="timebox"><input id="arrivee" name="arrivee" type="time" required /><button type="button" class="nowbtn" data-now="arrivee">Maintenant</button></div></div>
+          <div class="timeitem"><label for="pause">Début de pause <span class="required">*</span></label><div class="timebox"><input id="pause" name="pause" type="time" required /><button type="button" class="nowbtn" data-now="pause">Maintenant</button></div></div>
+          <div class="timeitem"><label for="reprise">Reprise <span class="required">*</span></label><div class="timebox"><input id="reprise" name="reprise" type="time" required /><button type="button" class="nowbtn" data-now="reprise">Maintenant</button></div></div>
+          <div class="timeitem"><label for="fin">Fin de chantier <span class="required">*</span></label><div class="timebox"><input id="fin" name="fin" type="time" required /><button type="button" class="nowbtn" data-now="fin">Maintenant</button></div></div>
+        </div>
+        <label class="checkbox-line" for="lendemain"><input type="checkbox" id="lendemain" /> Le chantier se termine le lendemain (travail de nuit)</label>
+      </section>
+      <section class="card"><div class="section-head"><span class="num">03</span><div><h2>Repas pris en charge</h2><p>Choisissez Oui ou Non</p></div></div>
+        <div class="mealrows"><div class="mealrow"><span>Repas midi <span class="required">*</span></span><div class="choices" role="group" aria-label="Repas midi"><button type="button" data-meal="midi" data-value="Oui" aria-pressed="false">Oui</button><button type="button" data-meal="midi" data-value="Non" aria-pressed="false">Non</button></div></div>
+        <div class="mealrow"><span>Repas soir <span class="required">*</span></span><div class="choices" role="group" aria-label="Repas soir"><button type="button" data-meal="soir" data-value="Oui" aria-pressed="false">Oui</button><button type="button" data-meal="soir" data-value="Non" aria-pressed="false">Non</button></div></div></div>
+      </section>
+      <section class="card"><div class="section-head"><span class="num">04</span><div><h2>Étiquette de prestation</h2><p>Enregistrez plusieurs chantiers, chacun avec son étiquette</p></div></div>
+        <div class="field"><label class="label" for="jobSelect">Mes chantiers mémorisés</label><select id="jobSelect"><option value="">Choisir un chantier enregistré ou en photographier un nouveau</option></select></div><button class="small-link" type="button" id="newJob">+ Nouvelle étiquette / nouveau chantier</button><div class="savedjob" id="savedJob" hidden><div><strong id="savedJobLabel">Chantier mémorisé</strong><div class="hint" id="savedJobMeta"></div></div><div class="savedactions"><button type="button" class="small-link" id="useSaved">Utiliser ce chantier</button><button type="button" class="small-link" id="clearSaved">Effacer</button></div></div>
+        <div class="photoarea" id="photoArea"><div class="cameraicon" aria-hidden="true">📷</div><strong>Photo de l'étiquette <span class="required">*</span></strong><p>Premier jour : prenez la photo. Les jours suivants : réutilisez le chantier mémorisé.</p><img id="photoPreview" alt="Aperçu de votre étiquette" /><div><label class="photo-chooser"><span class="photobutton">📸 Prendre une photo</span><input id="photoInput" type="file" accept="image/*" capture="environment" aria-label="Prendre une photo" /></label><label class="photo-chooser"><span class="photobutton" style="background:#496879">🖼️ Choisir une photo existante</span><input id="galleryInput" type="file" accept="image/*" aria-label="Choisir une photo existante" /></label></div><div id="photoCheck" class="hint" style="margin-top:7px">Après la prise de vue, la photo doit apparaître juste ici en aperçu.</div><div class="photo-status" id="photoStatus">Aucune photo sélectionnée</div><button class="photobutton" style="margin-top:12px;background:#07566f" type="button" id="analyzePhoto">🔎 Analyser la photo</button><div id="ocrStatus" role="status" aria-live="polite" class="hint" style="text-align:left;margin-top:10px">Prenez une photo nette de l’étiquette entière, puis lancez l’analyse.</div><details style="text-align:left;margin-top:10px"><summary>Afficher le texte reconnu (pour vérification)</summary><pre id="ocrRaw" style="white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 monospace;color:#3b5868;max-height:190px;overflow:auto"></pre></details><button class="small-link hidden" type="button" id="removePhoto">Retirer la photo</button></div>
+        <details open><summary>Informations du chantier (à vérifier sur l’étiquette)</summary><div class="field"><label class="label" for="ref">Référence chantier</label><input type="text" id="ref" placeholder="À lire sur l'étiquette" /></div><div class="field"><label class="label" for="chantier">Nom du chantier</label><input type="text" id="chantier" placeholder="À lire sur l'étiquette" /></div><div class="field"><label class="label" for="client">Client</label><input type="text" id="client" placeholder="À lire sur l'étiquette" /></div><div class="field"><label class="label" for="lieu">Lieu</label><input type="text" id="lieu" placeholder="Ex. : Porte de Versailles – Hall 4" /></div><p class="hint">Lecture photo expérimentale : vérifiez systématiquement les résultats, surtout les numéros. L’analyse se fait dans votre navigateur après chargement du moteur OCR ; aucun envoi à NOVELTY.</p><button class="small-link" type="button" id="saveJob">💾 Garder cette étiquette pour les prochains jours</button></details>
+      </section>
+      <div class="actions"><button type="submit" class="primary" id="submitButton">Vérifier avant envoi →</button><button type="button" class="small-link" id="newDay">↻ Nouveau pointage (même jour ou autre chantier)</button></div>
+      <section class="card"><div class="section-head"><span class="num">05</span><div><h2>Pointages de démonstration</h2><p>Retrouvez ici les pointages conservés sur cet appareil</p></div></div><div id="localPointages" class="hint">Aucun pointage de démonstration enregistré.</div><button class="small-link" type="button" id="clearPointages">Effacer les pointages de démonstration</button></section><p class="footnote">Avant envoi : horaires modifiables. Après envoi réel : correction soumise à approbation. Cette démonstration ne réalise aucun envoi.</p>
+    </form>
+    <div id="correction" class="hidden"><section class="card"><div class="section-head"><span class="num">✎</span><div><h2>Demander une correction</h2><p>Le responsable valide avant toute modification</p></div></div><p class="corr-note">Après un envoi réel, les corrections passeront par les deux responsables NOVELTY et le flux Power Automate existant. Cette démonstration ne transmet aucune demande.</p><div class="field"><label class="label" for="correctionId">Numéro de pointage</label><input type="number" id="correctionId" min="1" inputmode="numeric" placeholder="Numéro reçu par e-mail" /></div><div class="field"><label class="label" for="correctionNom">Nom et prénom</label><input type="text" id="correctionNom" autocomplete="name" placeholder="Votre nom" /></div><div class="field"><label class="label" for="correctionNote">Modification demandée</label><input type="text" id="correctionNote" placeholder="Ex. : remplacer 08:00 par 09:00" /></div><button class="primary" type="button" id="previewCorrection">Prévisualiser la demande →</button></section><p class="footnote">Aucune demande n'est réellement envoyée dans cette démonstration.</p></div>
+  </main>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-content"><div class="modal-head"><h2 id="modalTitle">Récapitulatif</h2><button class="close" type="button" id="closeModal" aria-label="Fermer">×</button></div><div id="modalBody"></div><button type="button" class="primary hidden" id="localSave" style="margin-top:17px">Enregistrer cette simulation sur ce téléphone</button><button type="button" class="small-link" id="backToForm" style="margin-top:17px">Retourner au formulaire</button><p class="footnote">Avant l’envoi réel, les heures restent modifiables. Aucun envoi dans cette démonstration.</p></div></div>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js" defer></script>
+  <script>
+  (() => { 'use strict';
+    const $ = id => document.getElementById(id);
+    const meals = {midi:null,soir:null};
+    let photo = null, photoUrl = null, photoIsSaved = false, mode='live';
+    const sources = {arrivee:null,pause:null,reprise:null,fin:null};
+    const jobKey='novelty-demo-v3-jobs';
+    const profileKey='novelty-demo-v3-profile', pointagesKey='novelty-demo-v3-pointages';
+    let activeJobId=null, pendingPointage=null;
+    function getLocal(k, fallback){try{return JSON.parse(localStorage.getItem(k)||'null')??fallback}catch{return fallback}}
+    function getJobs(){return getLocal(jobKey,[])}
+    function getPointages(){return getLocal(pointagesKey,[])}
+    function storeLocal(k,v){localStorage.setItem(k,JSON.stringify(v))}
+    function jobId(){return 'job-'+Date.now()+'-'+Math.random().toString(36).slice(2,7)}
+    function recordKey(j){return 'etiquette-'+j}
+    function restoreProfile(){const p=getLocal(profileKey,null);if(p){$('technicien').value=p.name||'';$('email').value=p.email||'';$('correctionNom').value=p.name||''}}
+    function persistProfile(){const name=$('technicien').value.trim(), email=$('email').value.trim();if(name)storeLocal(profileKey,{name,email});}
+    $('technicien').addEventListener('change',persistProfile);$('email').addEventListener('change',persistProfile);
+    $('clearProfile').addEventListener('click',()=>{if(!confirm('Effacer les coordonnées mémorisées sur ce téléphone ?'))return;localStorage.removeItem(profileKey);$('technicien').value='';$('email').value='';$('correctionNom').value='';flash('Profil local effacé.');});
+    restoreProfile();
+    // Local-only IndexedDB storage: no server receives the photo.
+    const dbPromise = new Promise((resolve,reject)=>{
+      if(!('indexedDB' in window)){reject(new Error('Stockage photo indisponible'));return;}
+      const request=indexedDB.open('novelty-v2-demo',1);
+      request.onupgradeneeded=()=>request.result.createObjectStore('assets');
+      request.onsuccess=()=>resolve(request.result);
+      request.onerror=()=>reject(request.error);
+    });
+    async function assetPut(key,value){const db=await dbPromise;return new Promise((resolve,reject)=>{const tx=db.transaction('assets','readwrite');tx.objectStore('assets').put(value,key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});}
+    async function assetGet(key){const db=await dbPromise;return new Promise((resolve,reject)=>{const rq=db.transaction('assets','readonly').objectStore('assets').get(key);rq.onsuccess=()=>resolve(rq.result);rq.onerror=()=>reject(rq.error);});}
+    async function assetDel(key){const db=await dbPromise;return new Promise((resolve,reject)=>{const tx=db.transaction('assets','readwrite');tx.objectStore('assets').delete(key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});}
+    const jobFields=['ref','chantier','client','lieu'];
+    function selectedJob(){return getJobs().find(j=>j.id===activeJobId)||null}
+    function renderSavedJob(){
+      const jobs=getJobs();const sel=$('jobSelect');const chosen=sel.value;
+      sel.innerHTML='<option value="">Choisir un chantier enregistré ou en photographier un nouveau</option>';
+      jobs.forEach(j=>{const option=document.createElement('option');option.value=j.id;option.textContent=(j.chantier||j.ref||'Chantier')+' · '+(j.ref||'sans référence');sel.appendChild(option)});
+      sel.value=activeJobId&&jobs.some(j=>j.id===activeJobId)?activeJobId:'';
+      const job=selectedJob();$('savedJob').hidden=!job;
+      if(job){$('savedJobLabel').textContent=job.chantier||job.ref||'Chantier enregistré';$('savedJobMeta').textContent=[job.ref,job.client,job.lieu].filter(Boolean).join(' · ')||'Photo conservée sur cet appareil'}
+    }
+    async function activateJob(id){
+      const j=getJobs().find(x=>x.id===id);if(!j)return;
+      activeJobId=j.id;jobFields.forEach(k=>$(k).value=j[k]||'');
+      try{const img=await assetGet(recordKey(j.id));if(img){setPhoto(img,true)}else{clearPhoto();flash('Photo introuvable : reprenez l’étiquette.')}}catch{clearPhoto();flash('Photo inaccessible : reprenez l’étiquette.')}
+      renderSavedJob();
+    }
+    $('jobSelect').addEventListener('change',async e=>{if(e.target.value)await activateJob(e.target.value);else startNewJob()});
+    function clearPhoto(){if(photoUrl)URL.revokeObjectURL(photoUrl);photo=null;photoUrl=null;photoIsSaved=false;$('photoInput').value='';$('galleryInput').value='';$('photoPreview').style.display='none';$('photoPreview').removeAttribute('src');$('photoStatus').textContent='Aucune photo sélectionnée';$('removePhoto').classList.add('hidden')}
+    function startNewJob(){assetDel('novelty-v4-photo-en-cours').catch(()=>{});activeJobId=null;jobFields.forEach(k=>$(k).value='');clearPhoto();renderSavedJob();hideFlash()}
+    $('newJob').addEventListener('click',startNewJob);
+    $('saveJob').addEventListener('click',async()=>{
+      if(!photo){flash('Prenez d’abord une photo de l’étiquette.');return}
+      const job=Object.fromEntries(jobFields.map(k=>[k,$(k).value.trim()]));
+      if(!job.ref&&!job.chantier){flash('Renseignez la référence ou le nom du chantier.');return}
+      const jobs=getJobs();const id=activeJobId||jobId();const item={...job,id};
+      const index=jobs.findIndex(j=>j.id===id);if(index>=0)jobs[index]=item;else jobs.push(item);
+      try{await assetPut(recordKey(id),photo);storeLocal(jobKey,jobs);activeJobId=id;renderSavedJob();flash('Étiquette enregistrée sur cet appareil. Vous pouvez la réutiliser plusieurs jours.')}catch{flash('Impossible d’enregistrer la photo sur cet appareil. Vérifiez le stockage.')}
+    });
+    $('useSaved').addEventListener('click',async()=>{if(activeJobId)await activateJob(activeJobId);hideFlash()});
+    $('clearSaved').addEventListener('click',async()=>{if(!activeJobId||!confirm('Supprimer ce chantier mémorisé et sa photo ?'))return;const id=activeJobId;storeLocal(jobKey,getJobs().filter(j=>j.id!==id));try{await assetDel(recordKey(id))}catch{}startNewJob();flash('Chantier mémorisé effacé.');});
+    // Migration de l'ancien chantier unique, si présent.
+    async function migrateOldJob(){const previous=getLocal('novelty-demo-v2-job',null);if(!previous||getJobs().length)return;try{const img=await assetGet('etiquette');if(img){const id=jobId();await assetPut(recordKey(id),img);storeLocal(jobKey,[{...previous,id}]);activeJobId=id;await activateJob(id)}}catch{}}
+    migrateOldJob().finally(renderSavedJob);
+    function setMode(v){mode=v;for(const [button,target] of [['modeLive','live'],['modeManual','manual']]){$(button).classList.toggle('active',target===mode);$(button).setAttribute('aria-pressed',String(target===mode))};$('modeHint').textContent=mode==='live'?'À chaque étape, cliquez sur « Maintenant ». Vous pouvez ajuster les heures avant de vérifier le pointage.':'Touchez chaque champ pour choisir l’heure. Les changements restent libres avant l’envoi.';document.querySelectorAll('.nowbtn').forEach(b=>b.style.display=mode==='live'?'':'none');}
+    $('modeLive').addEventListener('click',()=>setMode('live'));$('modeManual').addEventListener('click',()=>setMode('manual'));
+    for(const k of Object.keys(sources))$(k).addEventListener('change',()=>sources[k]='manuel');
+    $('newDay').addEventListener('click',()=>{if(!confirm('Préparer une nouvelle journée ? Les horaires et repas affichés seront effacés. Les chantiers mémorisés resteront disponibles.'))return;for(const k of Object.keys(sources)){$(k).value='';sources[k]=null};$('date').value=localDate(new Date());$('lendemain').checked=false;for(const k of Object.keys(meals))meals[k]=null;document.querySelectorAll('[data-meal]').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-pressed','false')});hideFlash();window.scrollTo({top:0,behavior:'smooth'});});
+    function localDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+    renderSavedJob();
+
+    const pad = n => String(n).padStart(2,'0');
+    const nowDate = new Date();
+    $('date').value = `${nowDate.getFullYear()}-${pad(nowDate.getMonth()+1)}-${pad(nowDate.getDate())}`;
+    document.querySelectorAll('[data-now]').forEach(b=>b.addEventListener('click',()=>{
+      const d=new Date();$(b.dataset.now).value=`${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      $(b.dataset.now).classList.remove('error');sources[b.dataset.now]='direct';
+    }));
+    document.querySelectorAll('[data-meal]').forEach(b=>b.addEventListener('click',()=>{
+      meals[b.dataset.meal]=b.dataset.value;
+      document.querySelectorAll(`[data-meal="${b.dataset.meal}"]`).forEach(x=>{
+        const selected=x.dataset.value===b.dataset.value;
+        x.classList.toggle('selected',selected);x.setAttribute('aria-pressed',String(selected));
+      });
+      hideFlash();
+    }));
+    function switchTab(which){
+      const correction=which==='correction';
+      $('newTab').classList.toggle('active',!correction);$('correctTab').classList.toggle('active',correction);
+      $('newTab').setAttribute('aria-selected',String(!correction));$('correctTab').setAttribute('aria-selected',String(correction));
+      $('form').classList.toggle('hidden',correction);$('correction').classList.toggle('hidden',!correction);
+      hideFlash();
+    }
+    $('newTab').addEventListener('click',()=>switchTab('new'));
+    $('correctTab').addEventListener('click',()=>switchTab('correction'));
+    const photoArea=$('photoArea');
+    photoArea.addEventListener('dragover', e=>{e.preventDefault();photoArea.classList.add('dragging')});
+    photoArea.addEventListener('dragleave',()=>photoArea.classList.remove('dragging'));
+    photoArea.addEventListener('drop',e=>{e.preventDefault();photoArea.classList.remove('dragging');setPhoto(e.dataTransfer.files?.[0])});
+    $('photoInput').addEventListener('change',e=>setPhoto(e.target.files?.[0]));
+    $('galleryInput').addEventListener('change',e=>setPhoto(e.target.files?.[0]));
+    // Brouillon de photo : conservation automatique dès la sélection, avant OCR.
+    const draftPhotoKey='novelty-v4-photo-en-cours';
+    async function restoreDraftPhoto(){
+      if(photo)return;
+      try{const draft=await assetGet(draftPhotoKey);if(draft&&!photo){setPhoto(draft,true);$('photoStatus').textContent='Photo retrouvée depuis le brouillon local';}}
+      catch{ /* Certains aperçus intégrés désactivent le stockage local. */ }
+    }
+    restoreDraftPhoto();
+    function setPhoto(file,isRestored=false){
+      if(!file)return;
+      if(!(file instanceof Blob) || (file.type && !file.type.startsWith('image/'))){flash('Merci de sélectionner une photo au format image.');return}
+      if(file.size > 40*1024*1024){flash('La photo est trop volumineuse (maximum 40 Mo dans cette démo).');return}
+      if(photoUrl)URL.revokeObjectURL(photoUrl);
+      photo=file;photoIsSaved=isRestored;photoUrl=URL.createObjectURL(file);
+      $('photoPreview').onload=()=>{$('photoCheck').textContent='✅ Photo reçue et visible. Vous pouvez cliquer sur « Analyser la photo ».';};
+      $('photoPreview').onerror=()=>{$('photoCheck').textContent='⚠️ Photo reçue, mais aperçu impossible sur ce navigateur. Essayez « Choisir une photo existante » en JPEG.';};
+      $('photoPreview').src=photoUrl;$('photoPreview').style.display='block';
+      $('photoStatus').textContent=isRestored?'Photo de l’étiquette mémorisée sur cet appareil':`Photo sélectionnée : ${file.name || 'étiquette'} (${(file.size/1024/1024).toFixed(1)} Mo)`;
+      $('removePhoto').classList.remove('hidden');photoArea.classList.remove('error');hideFlash();
+      if(!isRestored){assetPut(draftPhotoKey,file).then(()=>{$('photoStatus').textContent+=' · brouillon conservé sur cet appareil'}).catch(()=>{$('photoStatus').textContent+=' · stockage local indisponible dans cet aperçu';});}
+    }
+    $('removePhoto').addEventListener('click',()=>{clearPhoto();assetDel('novelty-v4-photo-en-cours').catch(()=>{});$('photoCheck').textContent='Photo retirée. Vous pouvez en prendre une nouvelle.';});
+    // Lecture expérimentale locale : le navigateur charge Tesseract.js depuis un CDN.
+    // Les photos ne sont pas envoyées à notre propre serveur. L'utilisateur vérifie toujours les champs.
+    function normalized(s){return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
+    function parseSticker(raw){
+      const lines=raw.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      let best=null;
+      for(let i=0;i<lines.length;i++){
+        const l=lines[i], matches=[...l.matchAll(/(?<!\d)\d{9}(?!\d)/g)];
+        for(const m of matches){
+          const adjacent=lines.slice(Math.max(0,i-1),Math.min(lines.length,i+2)).join(' ');
+          const nearDate=/\b[DdRr]\s*[:.]\s*(?:\w+\s*)?\d{1,2}\s*[\/.\-]\s*\d{1,2}/.test(adjacent);
+          const score=(nearDate?10:0)+(i<lines.length-2?1:0);
+          if(!best||score>best.score)best={ref:m[0],line:i,score};
+        }
+      }
+      const refIndex=best?.line??-1;
+      const locLine=lines.find(l=>/^lieu\s*[:：]/i.test(l))||'';
+      const lieu=locLine.replace(/^lieu\s*[:：]\s*/i,'').trim();
+      let client='',chantier='';
+      if(refIndex>=0){
+        const prev=lines.slice(Math.max(0,refIndex-3),refIndex).filter(l=>!/^D\s*:|^R\s*:/i.test(l));
+        client=prev.at(-1)||'';
+        const following=lines.slice(refIndex+1,Math.min(refIndex+4,lines.length));
+        chantier=following.find(l=>!/^lieu\s*:|^D\s*:|^R\s*:|^quai\s*:/i.test(l)&&!/^novelty/i.test(l)&&!/^\d{9}/.test(l))||'';
+      }
+      if(!client){client=lines.find((l,i)=>i<Math.max(1,refIndex)&&l.length>8&&!/novelty|CDJ\d|pioneer|^lieu/i.test(l))||''}
+      if(!chantier){chantier=lines.find((l,i)=>i>refIndex&&i<refIndex+5&&!/lieu|novelty|quai|^[DR]\s*:/i.test(l))||''}
+      const dates=lines.join(' ').match(/\b[DR]\s*:\s*(?:\w+\s+)?\d{1,2}\s*[\/.\-]\s*\d{1,2}\s*[\/.\-]\s*\d{2,4}/gi)||[];
+      return {ref:best?.ref||'',client:client.replace(/\s+[|\-]\s*$/,''),chantier,lieu,dates};
+    }
+    async function prepForOCR(file, rotation=0){
+      let bmp,dispose=()=>{};
+      if(typeof createImageBitmap==='function'){
+        bmp=await createImageBitmap(file);dispose=()=>bmp.close();
+      }else{
+        bmp=await new Promise((resolve,reject)=>{const img=new Image();const u=URL.createObjectURL(file);img.onload=()=>{URL.revokeObjectURL(u);resolve(img)};img.onerror=()=>{URL.revokeObjectURL(u);reject(new Error('Image illisible'))};img.src=u});
+      }
+      const max=1800, factor=Math.min(1,max/Math.max(bmp.width||bmp.naturalWidth,bmp.height||bmp.naturalHeight));
+      const w=Math.round((bmp.width||bmp.naturalWidth)*factor),h=Math.round((bmp.height||bmp.naturalHeight)*factor);
+      const canvas=document.createElement('canvas');
+      canvas.width=rotation? h:w;canvas.height=rotation?w:h;
+      const ctx=canvas.getContext('2d',{willReadFrequently:true});
+      if(rotation){ctx.translate(canvas.width,canvas.height);ctx.rotate(Math.PI)}
+      ctx.drawImage(bmp,0,0,w,h);dispose();
+      let img=ctx.getImageData(0,0,canvas.width,canvas.height);let pixels=img.data;
+      for(let i=0;i<pixels.length;i+=4){const g=.299*pixels[i]+.587*pixels[i+1]+.114*pixels[i+2];const c=Math.max(0,Math.min(255,(g-128)*1.55+128));pixels[i]=pixels[i+1]=pixels[i+2]=c}
+      ctx.putImageData(img,0,0);
+      return canvas;
+    }
+    $('analyzePhoto').addEventListener('click',async()=>{
+      if(!photo){flash('Photographiez ou choisissez une étiquette avant de lancer l’analyse.');return}
+      if(!window.Tesseract){$('ocrStatus').textContent='Le moteur OCR n’a pas pu se charger. Ouvrez ce fichier dans Safari/Chrome avec Internet, plutôt que dans l’aperçu intégré du téléchargement. La saisie manuelle reste possible.';return}
+      const btn=$('analyzePhoto');btn.disabled=true;btn.textContent='⏳ Analyse en cours…';
+      try{
+        $('ocrStatus').textContent='Lecture de la photo sur cet appareil… (première utilisation : téléchargement des données de langue).';
+        const worker=await Tesseract.createWorker('fra+eng',1,{logger:m=>{if(m.status==='recognizing text')$('ocrStatus').textContent='Reconnaissance : '+Math.round((m.progress||0)*100)+' %'}});
+        let raw='',parsed;
+        try{
+          const result=await worker.recognize(await prepForOCR(photo));
+          raw=result.data.text||'';parsed=parseSticker(raw);
+          if(!parsed.ref){$('ocrStatus').textContent='Référence non trouvée : essai avec orientation inversée…';const rotated=await worker.recognize(await prepForOCR(photo,180));const alternative=rotated.data.text||'';const p2=parseSticker(alternative);if(p2.ref||alternative.length>raw.length){parsed=p2;raw=alternative}}
+        }finally{await worker.terminate()}
+        $('ocrRaw').textContent=raw||'Aucun texte reconnu.';
+        const detected=['ref','client','chantier','lieu'].filter(k=>parsed[k]);
+        if(!detected.length){$('ocrStatus').textContent='Aucune information détectée. Reprenez une photo nette de l’étiquette et saisissez les références si nécessaire.';return}
+        let overwritten=0;
+        for(const k of detected){if($(k).value.trim() && $(k).value.trim()!==parsed[k]){overwritten++;continue}$(k).value=parsed[k]}
+        $('ocrStatus').textContent='Analyse terminée. '+detected.length+' champ(s) reconnu(s). '+(parsed.ref?'Référence proposée : '+parsed.ref+'. ':'Référence non reconnue. ')+(overwritten?'Les champs déjà remplis ont été conservés. ':'')+'Vérifiez et corrigez chaque valeur avant de mémoriser le chantier. Les dates D/R concernent le matériel, pas le pointage.';
+        if(parsed.dates.length){$('ocrStatus').textContent+=' Dates matériel détectées : '+parsed.dates.join(' · ')}
+      }catch(err){$('ocrStatus').textContent='La lecture automatique a échoué ('+(err?.message||'erreur inconnue')+'). La saisie manuelle reste possible. Une connexion Internet est nécessaire pour charger le moteur OCR.'}
+      finally{btn.disabled=false;btn.textContent='🔎 Analyser la photo'}
+    });
+
+    function flash(msg){const e=$('flash');e.textContent=msg;e.style.display='block';e.scrollIntoView({behavior:'smooth',block:'center'})}
+    function hideFlash(){$('flash').style.display='none'}
+    function minutes(hhmm){let [h,m]=hhmm.split(':').map(Number);return h*60+m}
+    function renderPointages(){
+      const area=$('localPointages'),list=getPointages().slice().reverse();area.innerHTML='';
+      if(!list.length){area.textContent='Aucun pointage de démonstration enregistré.';return}
+      list.forEach(p=>{const item=document.createElement('div');item.className='local-item';const title=document.createElement('strong');title.textContent=(p.chantier||p.ref||'Chantier')+' · '+humanDate(p.date);const detail=document.createElement('div');detail.textContent=p.arrivee+'–'+p.fin+' · Midi : '+p.midi+' · Soir : '+p.soir;item.append(title,detail);area.appendChild(item)})
+    }
+    $('clearPointages').addEventListener('click',()=>{if(!confirm('Effacer tous les pointages de démonstration de ce téléphone ?'))return;localStorage.removeItem(pointagesKey);renderPointages();});
+    renderPointages();
+    $('localSave').addEventListener('click',()=>{
+      if(!pendingPointage)return;
+      const items=getPointages();items.push({...pendingPointage,id:'local-'+Date.now()});storeLocal(pointagesKey,items);persistProfile();renderPointages();$('localSave').classList.add('hidden');pendingPointage=null;hideModal();flash('Simulation enregistrée sur cet appareil uniquement. Rien n’a été envoyé à NOVELTY.');
+    });
+    function humanDate(v){const [y,m,d]=v.split('-');return `${d}/${m}/${y}`}
+    function safely(t){return String(t??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}
+    function stat(k,v){return `<div class="stat"><small>${safely(k)}</small><b>${safely(v)}</b></div>`}
+    function showModal(title,html){$('localSave').classList.add('hidden');$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('modal').classList.add('open');$('closeModal').focus();}
+    function hideModal(){$('modal').classList.remove('open')}
+    $('closeModal').addEventListener('click',hideModal);$('backToForm').addEventListener('click',hideModal);
+    $('modal').addEventListener('click',e=>{if(e.target===$('modal'))hideModal()});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')hideModal()});
+    $('form').addEventListener('submit',e=>{
+      e.preventDefault();hideFlash();
+      const required=['technicien','date','arrivee','pause','reprise','fin'];
+      for(const id of required)$(id).classList.remove('error');
+      const missing=required.filter(id=>!$(id).value.trim());
+      if(missing.length){for(const id of missing)$(id).classList.add('error');flash('Renseignez votre nom, la date et les quatre horaires.');return}
+      if(meals.midi===null||meals.soir===null){flash('Indiquez Oui ou Non pour les deux repas.');return}
+      if(!photo){photoArea.classList.add('error');flash('Ajoutez la photo de l’étiquette de prestation.');return}
+      const vals=['arrivee','pause','reprise','fin'].map(id=>minutes($(id).value));
+      const end=vals[3]+($('lendemain').checked?1440:0);
+      if(!(vals[0]<=vals[1]&&vals[1]<=vals[2]&&vals[2]<=end)){
+        flash('Vérifiez l’ordre des horaires : arrivée, début pause, reprise, fin. Pour un chantier de nuit, cochez « se termine le lendemain ».');return
+      }
+      const pauseMinutes=vals[2]-vals[1],workingMinutes=(end-vals[0])-pauseMinutes;
+      if(workingMinutes<0||workingMinutes>24*60){flash('Les horaires semblent incohérents. Vérifiez les heures.');return}
+      const name=$('technicien').value.trim();
+      const site=$('chantier').value.trim()||$('ref').value.trim();
+      const duplicate=getPointages().filter(p=>p.date===$('date').value && p.technicien.toLocaleLowerCase()===name.toLocaleLowerCase() && (p.ref||p.chantier)!==($('ref').value.trim()||site));
+      const repeated=duplicate.filter(p=>(meals.midi==='Oui'&&p.midi==='Oui')||(meals.soir==='Oui'&&p.soir==='Oui'));
+      const conflict=repeated.length?`<div class="meal-warning"><strong>⚠️ Repas déjà déclaré sur un autre chantier ce jour</strong><p>${safely(repeated.map(p=>`${p.chantier||p.ref} (${[meals.midi==='Oui'&&p.midi==='Oui'?'midi':'',meals.soir==='Oui'&&p.soir==='Oui'?'soir':''].filter(Boolean).join(' et ')})`).join(' ; '))}</p><p>Vous pouvez confirmer cette déclaration. Elle n'est pas bloquée.</p></div>`:'';
+      pendingPointage={technicien:name,email:$('email').value.trim(),date:$('date').value,chantier:site,ref:$('ref').value.trim(),client:$('client').value.trim(),lieu:$('lieu').value.trim(),arrivee:$('arrivee').value,pause:$('pause').value,reprise:$('reprise').value,fin:$('fin').value,midi:meals.midi,soir:meals.soir,mode,travailMinutes:workingMinutes};
+      showModal('Pointage à vérifier',`<p style="color:#5e7285;font-size:14px;line-height:1.5">Vérifiez vos horaires. Vous pouvez revenir en arrière et les modifier librement tant que le pointage n’est pas envoyé.</p><div class="summary">${stat('Technicien',name)}${stat('Date',humanDate($('date').value))}${stat('Arrivée',$('arrivee').value)}${stat('Pause',$('pause').value)}${stat('Reprise',$('reprise').value)}${stat('Fin',$('fin').value+($('lendemain').checked?' (+1 jour)':''))}${stat('Travail estimé',(workingMinutes/60).toFixed(2).replace('.',',')+' h')}${stat('Repas midi',meals.midi)}${stat('Repas soir',meals.soir)}${stat('Photo',photoIsSaved?'Étiquette mémorisée':(photo.name || 'Étiquette jointe'))}${stat('Mode de saisie',mode==='live'?'En direct / ajustable':'Manuel')}${stat('Origine des heures',Object.entries(sources).map(([k,v])=>k+': '+(v||'manuel')).join(' · '))}${stat('Référence chantier',$('ref').value.trim()||'À lire sur la photo')}</div>${conflict}<div class="no-send"><strong>Démo uniquement :</strong> aucune photo et aucune information n'ont été envoyées. La connexion sécurisée à SharePoint / Excel sera ajoutée ensuite.</div>`);$('localSave').classList.remove('hidden');
+    });
+    $('previewCorrection').addEventListener('click',()=>{
+      if(!$('correctionId').value || !$('correctionNom').value.trim() || !$('correctionNote').value.trim()){
+        flash('Remplissez le numéro de pointage, votre nom et la correction demandée.');return;
+      }
+      showModal('Demande de correction',`<p style="color:#5e7285;font-size:14px">En version connectée, cette demande sera transmise aux deux responsables pour approbation.</p><div class="summary">${stat('N° pointage',$('correctionId').value)}${stat('Technicien',$('correctionNom').value.trim())}</div><p style="margin-top:18px"><strong>Correction souhaitée :</strong> ${safely($('correctionNote').value.trim())}</p><div class="no-send">Démo uniquement : aucune demande n'a été envoyée.</div>`)
+    });
+    if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+      window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))
+    }
+  })();
+  </script>
+</body>
+</html>
